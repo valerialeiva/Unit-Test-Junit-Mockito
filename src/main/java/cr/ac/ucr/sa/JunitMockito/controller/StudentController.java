@@ -64,11 +64,11 @@ public class StudentController {
 	public ResponseEntity<Student> updateStudent(@PathVariable String identificationCard, @RequestBody Student student) {
 
 		Optional<Student> studentR = studentService.findStudentByIdentificationCard(identificationCard);
-		/*if (!studentR.isPresent()) {
+		if (!studentR.isPresent()) {
 			throw new HttpClientErrorException(HttpStatus.NOT_FOUND,
 					"Student with ID" + "(" + identificationCard + ") not exist");
 		}
-		*/
+		
 		return new ResponseEntity<Student>(studentService.updateStudent(identificationCard,student), HttpStatus.ACCEPTED);
 	
 	}

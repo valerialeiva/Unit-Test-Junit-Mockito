@@ -6,7 +6,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -19,24 +18,18 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import cr.ac.ucr.sa.JunitMockito.models.Student;
 import cr.ac.ucr.sa.JunitMockito.service.StudentService;
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @WebMvcTest(StudentController.class)
 @AutoConfigureMockMvc
@@ -119,8 +112,7 @@ public class StudentControllerTest {
     @Test
 	public void post_creates_new_student_andReturnsObjWith201() throws Exception {
 		Student mockStudent = new Student("B55555", "Pepe", 25);
-		
-
+	
 		Mockito.when(studentService.createStudent(Mockito.any(Student.class)))
 		.thenReturn(mockStudent);
 
@@ -137,6 +129,23 @@ public class StudentControllerTest {
 		.andExpect(MockMvcResultMatchers.content().string(this.mapper.writeValueAsString(mockStudent)));
 	}
 
+    @Test
+	public void put_updatesAndReturnsUpdatedObjWith202() throws Exception {
+    	Student mockStudent = new Student("B63817", "Pepe", 25);
+    	when(studentService.findStudentByIdentificationCard("B63817")).thenReturn(Optional.of(mockStudent));
+		when(studentService.updateStudent(Mockito.anyString(), Mockito.any(Student.class)))
+		.thenReturn(mockStudent);
+
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+				.put("/student/update/B63817").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.accept(MediaType.APPLICATION_JSON).characterEncoding("UTF-8")
+				.content(this.mapper.writeValueAsBytes(mockStudent));
+
+		mockMvc.perform(builder)
+		.andExpect(status().isAccepted())
+		.andExpect(jsonPath("$.identificationCard", is("B63817")))
+		.andExpect(MockMvcResultMatchers.content().string(this.mapper.writeValueAsString(mockStudent)));
+	}
 
 
 	@Test
