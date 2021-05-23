@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import cr.ac.ucr.sa.JunitMockito.models.Student;
 import cr.ac.ucr.sa.JunitMockito.repository.StudentRepository;
-import javassist.NotFoundException;
 
 @Service
 @Transactional

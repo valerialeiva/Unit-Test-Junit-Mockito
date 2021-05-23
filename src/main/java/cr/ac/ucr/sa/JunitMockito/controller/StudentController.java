@@ -55,7 +55,7 @@ public class StudentController {
 		Optional<Student> studentR = studentService.findStudentByIdentificationCard(student.getIdentificationCard());
 		if (studentR.isPresent()) {
 			throw new HttpClientErrorException(HttpStatus.CONFLICT,
-					"Student with DNI" + "(" + student.getIdentificationCard() + ") already exists");
+					"Student with card" + "(" + student.getIdentificationCard() + ") already exists");
 		}
 		return new ResponseEntity<Student>(studentService.createStudent(student), HttpStatus.CREATED);
 	}

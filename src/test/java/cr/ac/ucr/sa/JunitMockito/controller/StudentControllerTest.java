@@ -45,56 +45,53 @@ public class StudentControllerTest {
 	ObjectMapper mapper;
 
     @Test
-    @DisplayName("GET /student/{identificationCard} - Success Status")
-    void get_student_by_identification_card_if_Success_response_test() throws Exception {
+    @DisplayName("GET /student/{identificationCard} - return Object and OK Status")
+    void get_student_by_identification_card() throws Exception {
     	
-    	//give the Mock Object to return in the test
+    	//give
     	Student mockStudent = new Student("B64219","Maikel",23);
-        
-    	//Prepare Mockito to intercept the request
-        when(studentService.findStudentByIdentificationCard("B64219")).thenReturn(Optional.of(mockStudent));
+    	when(studentService.findStudentByIdentificationCard("B64219")).thenReturn(Optional.of(mockStudent));
 
-        // Execute the GET request of the EndPoint
+        //when
         mockMvc.perform(get("/student/{identificationCard}","B64219"))
-                // Validate the response code and content type
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-
-                // Validate the returned fields
-                .andExpect(jsonPath("$.identificationCard", is("B64219")))
-                .andExpect(jsonPath("$.studentName", is("Maikel")))
-                .andExpect(jsonPath("$.studentAge", is(23)));
+        
+        //then
+               .andExpect(status().isOk())
+               .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+               .andExpect(jsonPath("$.identificationCard", is("B64219")))
+               .andExpect(jsonPath("$.studentName", is("Maikel")))
+               .andExpect(jsonPath("$.studentAge", is(23)));
     }
 	
     @Test
-    @DisplayName("GET /student/{identificationCard} - Not Found Status")
-    void get_student_by_identification_card_if_not_found_response_test() throws Exception {
-    	//Prepare Mockito to intercept the request
-        when(studentService.findStudentByIdentificationCard("B64219")).thenReturn(Optional.empty());
+    @DisplayName("GET /student/{identificationCard} - return Not Found Status ")
+    void get_studentById_ThrowsStudentNotFoundException() throws Exception {
+    	//give
+    	when(studentService.findStudentByIdentificationCard("B64219")).thenReturn(Optional.empty());
 
-     // Execute the GET request of the EndPoint
+    	//when
         mockMvc.perform(get("/student/{identificationCard}","B64219"))
-                // Validate the response code
+                
+        	//them
                 .andExpect(status().isNotFound());
     }
     
     @Test
-    @DisplayName("Call endpoint GET/student/students and then return all student success")
-    void get_all_students_with_success_response() throws Exception {
-        // Setup our mocked service
+    @DisplayName("GET /student/students - return all student and OK")
+    void get_allStudents_returnsOkWithListOfStudents() throws Exception {
+        //Give
         Student mockStudent1 = new Student("B64219", "Maikel", 23);
         Student mockStudent2 = new Student("B65722", "Jordan", 22);
         Student mockStudent3 = new Student("B58421", "Juanito", 24);
-        
-        when(studentService.findAll()).thenReturn(Lists.newArrayList(mockStudent1, mockStudent2,mockStudent3));
+        Mockito.when(studentService.findAll()).thenReturn(Lists.newArrayList(mockStudent1, mockStudent2,mockStudent3));
 
-        // Execute the GET request
+        //when
         mockMvc.perform(get("/student/students"))
-                // Validate the response code and content type
+                
+        //then
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-
-                // Validate the returned fields
+                
                 .andExpect(jsonPath("$", hasSize(3)))
                 .andExpect(jsonPath("$[0].identificationCard", is("B64219")))
                 .andExpect(jsonPath("$[0].studentName", is("Maikel")))
@@ -110,54 +107,68 @@ public class StudentControllerTest {
     }
     
     @Test
+    @DisplayName("POST /student/save - return Created Status")
 	public void post_creates_new_student_andReturnsObjWith201() throws Exception {
-		Student mockStudent = new Student("B55555", "Pepe", 25);
-	
+		//give
+    	Student mockStudent = new Student("B55555", "Pepe", 25);
 		Mockito.when(studentService.createStudent(Mockito.any(Student.class)))
 		.thenReturn(mockStudent);
-
-		// Build post request with student object payload
+		
+		//when
 		MockHttpServletRequestBuilder builder = 
 				MockMvcRequestBuilders.post("/student/save")
 				.contentType(MediaType.APPLICATION_JSON_VALUE)
 				.accept(MediaType.APPLICATION_JSON)
-				.characterEncoding("UTF-8").content(this.mapper.writeValueAsBytes(mockStudent));
-
+				.characterEncoding("UTF-8")
+				.content(this.mapper.writeValueAsBytes(mockStudent));
 		mockMvc.perform(builder)
+		
+		//then
 		.andExpect(status().isCreated())
 		.andExpect(jsonPath("$.identificationCard", is("B55555")))
-		.andExpect(MockMvcResultMatchers.content().string(this.mapper.writeValueAsString(mockStudent)));
+		.andExpect(MockMvcResultMatchers.content()
+				.string(this.mapper.writeValueAsString(mockStudent)));
 	}
 
     @Test
-	public void put_updatesAndReturnsUpdatedObjWith202() throws Exception {
+    @DisplayName("PUT /student/update - return Accepted Status")
+    public void put_updatesAndReturnsUpdatedObjWith202() throws Exception {
+    	//give
     	Student mockStudent = new Student("B63817", "Pepe", 25);
-    	when(studentService.findStudentByIdentificationCard("B63817")).thenReturn(Optional.of(mockStudent));
-		when(studentService.updateStudent(Mockito.anyString(), Mockito.any(Student.class)))
-		.thenReturn(mockStudent);
+    	
+    	when(studentService.findStudentByIdentificationCard("B63817"))
+    		.thenReturn(Optional.of(mockStudent));
+    	
+    	when(studentService.updateStudent(Mockito.anyString(), Mockito.any(Student.class)))
+			.thenReturn(mockStudent);
 
+    	//when
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
 				.put("/student/update/B63817").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.accept(MediaType.APPLICATION_JSON).characterEncoding("UTF-8")
 				.content(this.mapper.writeValueAsBytes(mockStudent));
-
+		
 		mockMvc.perform(builder)
+		//then
 		.andExpect(status().isAccepted())
 		.andExpect(jsonPath("$.identificationCard", is("B63817")))
-		.andExpect(MockMvcResultMatchers.content().string(this.mapper.writeValueAsString(mockStudent)));
+		.andExpect(MockMvcResultMatchers.content()
+				.string(this.mapper.writeValueAsString(mockStudent)));
 	}
 
 
 	@Test
+	@DisplayName("DELETE /student/delete/{id} - return NoContent Status")
 	public void delete_deleteStudent_Returns204Status() throws Exception {
+		//give
 		Long id = (long) 1;
-
 		StudentService serviceSpy = Mockito.spy(studentService);
 		Mockito.doNothing().when(serviceSpy).deleteStudent(id);
 
+		//when
 		mockMvc.perform(MockMvcRequestBuilders.delete("/student/delete/1")
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
-
+		//then
 		verify(studentService, times(1)).deleteStudent(id);
 	}
 
