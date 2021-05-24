@@ -32,7 +32,6 @@ import cr.ac.ucr.sa.JunitMockito.service.StudentService;
 import static org.hamcrest.Matchers.*;
 
 @WebMvcTest(StudentController.class)
-@AutoConfigureMockMvc
 public class StudentControllerTest {
 	
 	@MockBean
@@ -46,7 +45,7 @@ public class StudentControllerTest {
 
     @Test
     @DisplayName("GET /student/{identificationCard} - return Object and OK Status")
-    void get_student_by_identification_card() throws Exception {
+    void get_Student_by_identificationCard_returnsOkWithStudent() throws Exception {
     	
     	//give
     	Student mockStudent = new Student("B64219","Maikel",23);

@@ -17,15 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 
 import cr.ac.ucr.sa.JunitMockito.models.Student;
-import cr.ac.ucr.sa.JunitMockito.models.StudentResponse;
 import cr.ac.ucr.sa.JunitMockito.service.StudentService;
-import javassist.NotFoundException;
 
 @RestController()
 public class StudentController {
-
-	StudentResponse studentResponse;
-	Optional<Student> student;
 	StudentService studentService;
 
 	public StudentController(StudentService studentService) {
@@ -60,7 +55,9 @@ public class StudentController {
 		return new ResponseEntity<Student>(studentService.createStudent(student), HttpStatus.CREATED);
 	}
 	
-	@PutMapping(value = "/student/update/{identificationCard}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PutMapping(value = "/student/update/{identificationCard}", 
+			consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	
 	public ResponseEntity<Student> updateStudent(@PathVariable String identificationCard, @RequestBody Student student) {
 
 		Optional<Student> studentR = studentService.findStudentByIdentificationCard(identificationCard);
@@ -68,7 +65,6 @@ public class StudentController {
 			throw new HttpClientErrorException(HttpStatus.NOT_FOUND,
 					"Student with ID" + "(" + identificationCard + ") not exist");
 		}
-		
 		return new ResponseEntity<Student>(studentService.updateStudent(identificationCard,student), HttpStatus.ACCEPTED);
 	
 	}
