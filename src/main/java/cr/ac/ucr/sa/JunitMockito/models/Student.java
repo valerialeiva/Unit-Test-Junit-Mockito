@@ -33,11 +33,6 @@ public class Student {
 		this.studentAge = studentAge;
 	}
 	
-	
-	
-
-
-
 
 	public Long getStudentId() {
 		return studentId;
