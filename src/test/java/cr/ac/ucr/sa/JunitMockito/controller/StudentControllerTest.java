@@ -110,6 +110,10 @@ public class StudentControllerTest {
 	public void post_creates_new_student_andReturnsObjWith201() throws Exception {
 		//give
     	Student mockStudent = new Student("B55555", "Pepe", 25);
+    	
+    	Mockito.when(studentService.findStudentByIdentificationCard("B55555"))
+		.thenReturn(Optional.empty());
+    	
 		Mockito.when(studentService.createStudent(Mockito.any(Student.class)))
 		.thenReturn(mockStudent);
 		
@@ -166,8 +170,9 @@ public class StudentControllerTest {
 
 		//when
 		mockMvc.perform(MockMvcRequestBuilders.delete("/student/delete/1")
-				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
+				.contentType(MediaType.APPLICATION_JSON))
 		//then
+		.andExpect(status().isNoContent());
 		verify(studentService, times(1)).deleteStudent(id);
 	}
 
