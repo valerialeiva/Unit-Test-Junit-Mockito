@@ -28,7 +28,11 @@ public class StudentService {
 		return repository.findById(id);
 	}
 	
-	public Student createStudent(Student student){
+	public Student createStudent(Student student) throws Exception {
+		  Optional<Student> studentOptional = repository.findStudentByIdentificationCard(student.getIdentificationCard());
+		    if(studentOptional.isPresent()) {
+		        throw new Exception("User with IdentificationCard "+ student.getIdentificationCard()+" already exists");
+		    }
 		return repository.save(student);
 	}
 	
@@ -46,8 +50,8 @@ public class StudentService {
 		return repository.save(orginalStudent);
 	}
 	
+	
 	public void deleteStudent(long id) {
-
 
 		repository.deleteById(id);
 	}
